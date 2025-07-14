@@ -2,13 +2,14 @@
   "name": "vulntracker-ui",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://hgedda1.github.io/vulntracker-ui",
   "scripts": {
-  "dev": "next dev",
-  "build": "next build && next export",
-  "start": "next start",
-  "lint": "next lint",
-  "deploy": "npm run build && git add out && git commit -m 'Deploy to GitHub Pages' && git subtree push --prefix out origin gh-pages"
-},
+    "dev": "next dev",
+    "build": "next build && next export",
+    "start": "next start",
+    "lint": "next lint",
+    "deploy": "npm run build && git add out && git commit -m 'Deploy to GitHub Pages' && git subtree push --prefix out origin gh-pages"
+  },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-accordion": "latest",

@@ -12,7 +12,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  basePath: isProd ? '/vulntracker-ui' : '', 
+  basePath: isProd ? '/vulntracker-ui' : '',
+  assetPrefix: isProd ? '/vulntracker-ui/' : '',
 }
 
 export default nextConfig
