@@ -5,7 +5,7 @@
   "homepage": "https://hgedda1.github.io/vulntracker-ui",
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next export",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "deploy": "npm run build && git add -f out && git commit -m \"Deploy to GitHub Pages\" || echo 'No changes to commit' && powershell -Command \"$sha = git subtree split --prefix out main; git push origin $sha`:gh-pages --force\""
