@@ -3,16 +3,17 @@ const isProd = process.env.NODE_ENV === 'production'
 
 const nextConfig = {
   output: 'export',
+  basePath: isProd ? '/vulntracker-ui' : '',
+  assetPrefix: isProd ? '/vulntracker-ui/' : '',
+  images: {
+    unoptimized: true,
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
   },
-  images: {
-    unoptimized: true,
-  },
-  basePath: isProd ? '/vulntracker-ui' : '',
 }
 
 export default nextConfig
