@@ -9,7 +9,7 @@ export default function Home() {
   const [vulnerabilities, setVulnerabilities] = useState<Vulnerability[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [source, setSource] = useState<"api" | "local" | null>(null)
+  const [source, setSource] = useState<"vercel-api" | "proxy" | "local" | null>(null)
 
   useEffect(() => {
     async function fetchData() {
@@ -17,18 +17,33 @@ export default function Home() {
         setLoading(true)
         let data: Vulnerability[] = []
 
-        const isLocalhost = window.location.hostname === "localhost"
-        const isGitHubPages = window.location.hostname.includes("github.io")
+        const hostname = window.location.hostname
+        const isLocalhost = hostname === "localhost"
+        const isGitHubPages = hostname.includes("github.io")
 
-        // 1. Try API fetch via proxy if running locally
-        if (isLocalhost) {
+        // 1. Vercel API route (works in Vercel deployment)
+        try {
+          const vercelApi = await fetch("/api/cisa")
+          if (vercelApi.ok) {
+            const res = await vercelApi.json()
+            if (res?.vulnerabilities?.length > 0) {
+              data = res.vulnerabilities
+              setSource("vercel-api")
+            }
+          }
+        } catch (err) {
+          console.warn("Vercel API route failed:", err)
+        }
+
+        // 2. Localhost proxy server (for local dev)
+        if (data.length === 0 && isLocalhost) {
           try {
-            const proxyResponse = await fetch("http://localhost:5001/api/cisa")
-            if (proxyResponse.ok) {
-              const apiData = await proxyResponse.json()
-              if (apiData.vulnerabilities?.length > 0) {
-                data = apiData.vulnerabilities
-                setSource("api")
+            const localProxy = await fetch("http://localhost:5001/api/cisa")
+            if (localProxy.ok) {
+              const res = await localProxy.json()
+              if (res?.vulnerabilities?.length > 0) {
+                data = res.vulnerabilities
+                setSource("proxy")
               }
             }
           } catch (err) {
@@ -36,23 +51,23 @@ export default function Home() {
           }
         }
 
-        // 2. If still no data, fallback to local JSON
+        // 3. Fallback to local static JSON
         if (data.length === 0) {
-          const jsonPath = isGitHubPages
+          const fallbackJsonPath = isGitHubPages
             ? "/vulntracker-ui/data/data.json"
             : "/data/data.json"
 
           try {
-            const localResponse = await fetch(jsonPath)
+            const localResponse = await fetch(fallbackJsonPath)
             if (localResponse.ok) {
               const localData = await localResponse.json()
               data = localData.vulnerabilities || localData || []
               setSource("local")
             } else {
-              throw new Error("data.json not found")
+              throw new Error("Local data.json not found")
             }
           } catch (err) {
-            throw new Error("Failed to fetch local JSON")
+            throw new Error("Failed to fetch local fallback JSON")
           }
         }
 
