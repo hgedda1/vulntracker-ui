@@ -53,9 +53,12 @@ export default function Home() {
 
         // 3. Fallback to static local JSON
         if (data.length === 0) {
+          const isVercel = hostname.endsWith("vercel.app")
           const path = isGitHubPages
             ? "/vulntracker-ui/data/data.json"
-            : "/data/data.json"
+            : isVercel
+              ? "/data/data.json"
+              : "/data/data.json"
 
           try {
             const res = await fetch(path)
