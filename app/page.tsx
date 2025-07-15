@@ -21,13 +21,13 @@ export default function Home() {
         const isLocalhost = hostname === "localhost"
         const isGitHubPages = hostname.includes("github.io")
 
-        // 1. Vercel API route (works in Vercel deployment)
+        // 1. Vercel API route
         try {
-          const vercelApi = await fetch("/api/cisa")
-          if (vercelApi.ok) {
-            const res = await vercelApi.json()
-            if (res?.vulnerabilities?.length > 0) {
-              data = res.vulnerabilities
+          const res = await fetch("/api/cisa")
+          if (res.ok) {
+            const json = await res.json()
+            if (json?.vulnerabilities?.length > 0) {
+              data = json.vulnerabilities
               setSource("vercel-api")
             }
           }
@@ -35,14 +35,14 @@ export default function Home() {
           console.warn("Vercel API route failed:", err)
         }
 
-        // 2. Localhost proxy server (for local dev)
+        // 2. Localhost proxy (for development)
         if (data.length === 0 && isLocalhost) {
           try {
-            const localProxy = await fetch("http://localhost:5001/api/cisa")
-            if (localProxy.ok) {
-              const res = await localProxy.json()
-              if (res?.vulnerabilities?.length > 0) {
-                data = res.vulnerabilities
+            const res = await fetch("http://localhost:5001/api/cisa")
+            if (res.ok) {
+              const json = await res.json()
+              if (json?.vulnerabilities?.length > 0) {
+                data = json.vulnerabilities
                 setSource("proxy")
               }
             }
@@ -51,20 +51,20 @@ export default function Home() {
           }
         }
 
-        // 3. Fallback to local static JSON
+        // 3. Fallback to static local JSON
         if (data.length === 0) {
-          const fallbackJsonPath = isGitHubPages
+          const path = isGitHubPages
             ? "/vulntracker-ui/data/data.json"
             : "/data/data.json"
 
           try {
-            const localResponse = await fetch(fallbackJsonPath)
-            if (localResponse.ok) {
-              const localData = await localResponse.json()
-              data = localData.vulnerabilities || localData || []
+            const res = await fetch(path)
+            if (res.ok) {
+              const json = await res.json()
+              data = json.vulnerabilities || json || []
               setSource("local")
             } else {
-              throw new Error("Local data.json not found")
+              throw new Error("data.json not found")
             }
           } catch (err) {
             throw new Error("Failed to fetch local fallback JSON")
@@ -102,5 +102,10 @@ export default function Home() {
     )
   }
 
-  return <VulnerabilityDashboard vulnerabilities={vulnerabilities} source={source} />
+  return (
+    <VulnerabilityDashboard
+      vulnerabilities={vulnerabilities}
+      source={source}
+    />
+  )
 }
