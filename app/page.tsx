@@ -17,33 +17,42 @@ export default function Home() {
         setLoading(true)
         let data: Vulnerability[] = []
 
-        try {
-          const apiResponse = await fetch(
-            "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
-          )
-          if (apiResponse.ok) {
-            const apiData = await apiResponse.json()
-            if (apiData.vulnerabilities?.length > 0) {
-              data = apiData.vulnerabilities
-              setSource("api")
+        const isLocalhost = window.location.hostname === "localhost"
+        const isGitHubPages = window.location.hostname.includes("github.io")
+
+        // 1. Try API fetch via proxy if running locally
+        if (isLocalhost) {
+          try {
+            const proxyResponse = await fetch("http://localhost:5001/api/cisa")
+            if (proxyResponse.ok) {
+              const apiData = await proxyResponse.json()
+              if (apiData.vulnerabilities?.length > 0) {
+                data = apiData.vulnerabilities
+                setSource("api")
+              }
             }
+          } catch (err) {
+            console.warn("Local proxy fetch failed:", err)
           }
-        } catch (apiError) {
-          console.warn("API fetch failed due to CORS, trying local fallback...")
         }
 
+        // 2. If still no data, fallback to local JSON
         if (data.length === 0) {
-          const localJsonPath = window.location.hostname.includes("github.io")
+          const jsonPath = isGitHubPages
             ? "/vulntracker-ui/data/data.json"
             : "/data/data.json"
 
-          const localResponse = await fetch(localJsonPath)
-          if (localResponse.ok) {
-            const localData = await localResponse.json()
-            data = localData.vulnerabilities || localData || []
-            setSource("local")
-          } else {
-            throw new Error("Local data.json not found")
+          try {
+            const localResponse = await fetch(jsonPath)
+            if (localResponse.ok) {
+              const localData = await localResponse.json()
+              data = localData.vulnerabilities || localData || []
+              setSource("local")
+            } else {
+              throw new Error("data.json not found")
+            }
+          } catch (err) {
+            throw new Error("Failed to fetch local JSON")
           }
         }
 

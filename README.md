@@ -7,7 +7,8 @@ A modern, interactive vulnerability management dashboard that visualizes known e
 
 - Full-text search across CVEs 
 - Severity-based filtering(Critical, High, Medium, Low) 
-- Sortable by Date Added, Due Date, CVE ID, Vendor - Chart, Table, and Tile views 
+- Chart, Table, and Tile visualizations
+- Sort by CVE ID, Date Added, Due Date, Vendor
 - Export to CSV/JSON 
 - Overdue vulnerability alerts - Fully static — deploys anywhere (GitHub Pages, Netlify, Vercel)
 
@@ -23,11 +24,11 @@ watch the results in the right.
 
 Dillinger uses a number of open source projects to work properly:
 
-- Next.js 15 
-- Tailwind CSS 
-- ShadCN UI 
-- Recharts 
-- Lucide Icons
+- **Next.js 15**
+- **Tailwind CSS**
+- **ShadCN UI**
+- **Recharts**
+- **Lucide Icons**
 
 And of course it is open source here
 > https://github.com/hgedda1/vulntracker-ui
@@ -35,10 +36,16 @@ And of course it is open source here
 
 ## Installation
 
+### Prerequisites
+
+- Node.js v18+ recommended  
+- `pnpm` package manager (`npm install -g pnpm`)
+
 - vulntracker-ui requires [Node.js](https://nodejs.org/) v10+ to run.
 - pnpm package
 
-Clone the repo git clone
+### Clone the repo git clone
+
 ```sh
 https://github.com/hgedda1/vulntracker-ui.git
 cd vulntracker-ui
@@ -49,6 +56,14 @@ Install the dependencies and devDependencies and start the server.
 pnpm install
 pnpm run build
 ```
+### Start Proxy Server (for development)
+
+To bypass CORS issues with the CISA API, run the local proxy server in a separate terminal:
+
+```bash
+node server.js
+```
+
 Development Server
 ```sh
 pnpm run dev
