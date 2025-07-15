@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://hgedda1.github.io/vulntracker-ui",
   "scripts": {
+    "fetch:nvd": "tsx scripts/fetch-nvd.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
