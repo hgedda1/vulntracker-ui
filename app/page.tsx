@@ -18,7 +18,9 @@ export default function Home() {
         let data: Vulnerability[] = []
 
         try {
-          const apiResponse = await fetch("https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json")
+          const apiResponse = await fetch(
+            "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
+          )
           if (apiResponse.ok) {
             const apiData = await apiResponse.json()
             if (apiData.vulnerabilities?.length > 0) {
@@ -27,15 +29,21 @@ export default function Home() {
             }
           }
         } catch (apiError) {
-          console.warn("API fetch failed, trying local fallback...")
+          console.warn("API fetch failed due to CORS, trying local fallback...")
         }
 
         if (data.length === 0) {
-          const localResponse = await fetch("/data/data.json")
+          const localJsonPath = window.location.hostname.includes("github.io")
+            ? "/vulntracker-ui/data/data.json"
+            : "/data/data.json"
+
+          const localResponse = await fetch(localJsonPath)
           if (localResponse.ok) {
             const localData = await localResponse.json()
             data = localData.vulnerabilities || localData || []
             setSource("local")
+          } else {
+            throw new Error("Local data.json not found")
           }
         }
 
