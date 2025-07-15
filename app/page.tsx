@@ -18,7 +18,7 @@ export default function Home() {
         let data: Vulnerability[] = []
 
         try {
-          const apiResponse = await fetch("/api/cisa")
+          const apiResponse = await fetch("https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json")
           if (apiResponse.ok) {
             const apiData = await apiResponse.json()
             if (apiData.vulnerabilities?.length > 0) {
